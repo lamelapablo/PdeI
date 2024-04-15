@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define PORT 8080
 
@@ -53,7 +54,7 @@ int main() {
             continue;
         }
 
-        printf("Cliente conectado\n");
+        printf("Cliente conectado: |%s|\n", inet_ntoa(client_addr.sin_addr));
 
         // Maneja la solicitud del cliente
         handle_request(client_socket);
