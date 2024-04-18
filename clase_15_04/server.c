@@ -69,37 +69,42 @@ int main(){
             perror("accept");
             continue;
         }
-        printf("Server: got connection from |%s|\n", inet_ntoa(client_addr.sin_addr));
-    
+        printf("PID: %d | Server: got connection from |%s|\n", getpid(), inet_ntoa(client_addr.sin_addr));
 
-        if((numbytes = recv(new_fd, buf, MAX_DATA_SIZE, 0)) == -1){
-            perror("recv");
-            exit(1);
+        if(!fork()){
+            if((numbytes = recv(new_fd, buf, MAX_DATA_SIZE, 0)) == -1){
+                perror("recv");
+                exit(1);
+            }
+
+            buf[numbytes] = '\0';
+
+            printf("PID: %d | Received: %s", getpid(), buf);
+            
+            struct timespec start, end;
+            clock_gettime(CLOCK_MONOTONIC, &start);
+            int result = factorial(atoi(buf));
+            printf("%d! = %d\n", atoi(buf), result);
+            clock_gettime(CLOCK_MONOTONIC, &end);
+            double tiempo_t = tiempo_transcurrido(&start, &end);
+            printf("tiempo: %f\n", tiempo_t);
+            
+            
+            bzero(buf, MAX_DATA_SIZE);
+            sprintf(buf, "%d", result);
+            send(new_fd, buf, sizeof(buf), 0);
+
+            bzero(buf, MAX_DATA_SIZE);
+            sprintf(buf, "%f", tiempo_t);
+            printf("buf: %s\n", buf);
+            send(new_fd, buf, sizeof(buf), 0);
+
+            close(new_fd);
+            exit(0);
         }
-
-        buf[numbytes] = '\0';
-
-        printf("Received: %s", buf);
-        
-        struct timespec start, end;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        int result = factorial(atoi(buf));
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double tiempo_t = tiempo_transcurrido(&start, &end);
-        
-        bzero(buf, MAX_DATA_SIZE);
-        itoa(result, buf);
-        send()
-
-        // if(!fork()){
-        //     if(send(new_fd, "Hello world\n", 14, 0) == -1) perror("send");
-        //     close(new_fd);
-        //     exit(0);
-        // }
-        close(new_fd);
         while(waitpid(-1, NULL, WNOHANG) > 0);
     }
-
+    close(sockfd);
     return 0;
 }
 

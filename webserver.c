@@ -21,11 +21,17 @@ int main() {
     int server_socket, client_socket;
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
+    int yes = 1;
 
     // Crea el socket
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         exit(EXIT_FAILURE);
+    }
+
+    if (setsockopt(server_socket,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
+        perror("setsockopt");
+        exit(1);
     }
 
     // Configura la dirección del servidor

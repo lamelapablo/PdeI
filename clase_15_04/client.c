@@ -53,7 +53,26 @@ int main(int argc, char *argv[]){
 
     send(sockfd, buff, sizeof(buff), 0);
 
-    
+    bzero(buff, sizeof(buff));
+
+    if((numbytes = recv(sockfd, buff, MAX_DATA_SIZE, 0)) == -1){
+            perror("recv");
+            exit(1);
+        }
+
+    buff[numbytes] = '\0';
+    printf("El resultado es: %s\n", buff);
+
+    bzero(buff, sizeof(buff));
+
+    if((numbytes = recv(sockfd, buff, MAX_DATA_SIZE, 0)) == -1){
+            perror("recv");
+            exit(1);
+        }
+
+    buff[numbytes] = '\0';
+
+    printf("El timepo transcurrido es %s segundos\n", buff);
 
     close(sockfd);
 
