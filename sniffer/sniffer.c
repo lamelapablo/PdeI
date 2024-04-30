@@ -3,13 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/ip.h>
-#include <netinet/udp.h>
-#include <netinet/tcp.h>
 #include <arpa/inet.h>
-#include <net/ethernet.h>
-#include <netpacket/packet.h>
-#include<netinet/ip_icmp.h>
+#include <netinet/if_ether.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <netinet/ip_icmp.h>
 
 #define BUFFER_SIZE 65536
 
@@ -38,14 +37,13 @@ void procesar_paquete(unsigned char *buffer, int size) {
     printf("    - Identificación: %d\n", ntohs(encabezado_ip->id));
     printf("    - Fragmentación: Flags: %d, Offset: %d\n", (encabezado_ip->frag_off & 0x1FFF), (encabezado_ip->frag_off & 0xE000) >> 13);
     printf("    - Tiempo de vida: %d\n", encabezado_ip->ttl);
-    printf("    - Protocolo: %d\n", encabezado_ip->protocol);
+    printf("    - Protocolo: %d\n", (unsigned int)encabezado_ip->protocol);
     printf("    - Suma de control: 0x%.4X\n", ntohs(encabezado_ip->check));
     printf("    - Dirección IP de origen: %s\n", inet_ntoa(*(struct in_addr *)&encabezado_ip->saddr));
     printf("    - Dirección IP de destino: %s\n", inet_ntoa(*(struct in_addr *)&encabezado_ip->daddr));
 
     // Encabezado TCP
-    if((int)encabezado_ip->protocol == 6){
-    //if(encabezado_ip->protocol == IPPROTO_TCP) {
+    if(encabezado_ip->protocol == IPPROTO_TCP) {
         struct tcphdr *encabezado_tcp = (struct tcphdr *)(buffer + sizeof(struct ethhdr) + encabezado_ip->ihl * 4);
         printf("|*| Encabezado TCP\n");
         printf("    - Puerto de origen: %d\n", ntohs(encabezado_tcp->source));
@@ -100,7 +98,7 @@ int main() {
     unsigned char buffer[BUFFER_SIZE];
     
     // Crear socket raw
-    if ((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0) {
+    if ((sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
@@ -116,7 +114,7 @@ int main() {
         procesar_paquete(buffer, bytes_recibidos);
     }
 
-    close(sockfd);
+    //close(sockfd);
 
     return 0;
 }
