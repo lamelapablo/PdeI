@@ -60,6 +60,7 @@ int main() {
     // Recibir paquetes 
     while (1) {
         int bytes_recibidos = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
+        printf("SE RECIBEN BYTES\n");
         if (bytes_recibidos < 0) {
             perror("recvfrom");
             exit(EXIT_FAILURE);

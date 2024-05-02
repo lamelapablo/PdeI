@@ -1,8 +1,3 @@
-/*
-Protocolos de Internet- Javier Ouret 
-RAW SOCKETS VERSION SIMPLIFICADA
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +7,7 @@ RAW SOCKETS VERSION SIMPLIFICADA
 #include <netinet/udp.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <netinet/if_ether.h>
 
 #define BUFFER_SIZE 65536
 
@@ -24,13 +20,18 @@ void procesar_paquete(unsigned char *buffer, int size) {
         unsigned int puerto_origen = ntohs(encabezado_tcp->source);
         unsigned int puerto_destino = ntohs(encabezado_tcp->dest);
         
-        printf("Paquete TCP - Puerto de origen: %u, Puerto de destino: %u\n", puerto_origen, puerto_destino);
+        if(puerto_origen == 3535 || puerto_destino == 3535){
+            printf("Paquete TCP - Puerto de origen: %u, Puerto de destino: %u\n", puerto_origen, puerto_destino);
+        }
+        
     } else if (encabezado_ip->protocol == IPPROTO_UDP) {
         struct udphdr *encabezado_udp = (struct udphdr *)(buffer + longitud_encabezado_ip);
         unsigned int puerto_origen = ntohs(encabezado_udp->source);
         unsigned int puerto_destino = ntohs(encabezado_udp->dest);
         
-        printf("Paquete UDP - Puerto de origen: %u, Puerto de destino: %u\n", puerto_origen, puerto_destino);
+        if(puerto_origen == 3535 || puerto_destino == 3535){
+            printf("Paquete UDP - Puerto de origen: %u, Puerto de destino: %u\n", puerto_origen, puerto_destino);
+        }
     } else if (encabezado_ip->protocol == IPPROTO_ICMP) {
         printf("Paquete ICMP\n");
     } else {
@@ -43,7 +44,7 @@ int main() {
     unsigned char buffer[BUFFER_SIZE];
     
     // Crear socket raw
-    if ((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0) {
+    if ((sockfd = socket(AF_INET,SOCK_RAW, IPPROTO_ICMP)) < 0) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
