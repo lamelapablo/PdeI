@@ -11,7 +11,7 @@ print ('conectando a %s puerto %s',server_dir)
 sock.connect(server_dir)
 
 contador = 0
-while contador <= 5:
+while contador <=3:
     # Enviando datos
     print("Paso:", contador)
     datos = sock.recv(10)
@@ -30,7 +30,7 @@ while contador <= 5:
         print('recibiendo "%s"', data)
 
     contador = contador + 1
-    print("Paso:", contador)
+    print ("Paso:", contador)
 
-print('cerrando socket')
+print ('cerrando socket')
 sock.close()

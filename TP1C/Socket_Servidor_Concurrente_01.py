@@ -8,9 +8,9 @@ port = 6667
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print("Socket Creado")
 sock.bind((host, port))
-print("socket bind Completado")
+print("Socket bind Completado")
 sock.listen(1)
-print("socket en modo escucha - pasivo")
+print("Socket en modo escucha - pasivo")
 
 def proceso_hijo(*args): #*args valores de conexión y dirección de cliente devueltos por sock.accept()
     conn = args[0] #Conexión
@@ -21,7 +21,7 @@ def proceso_hijo(*args): #*args valores de conexión y dirección de cliente dev
 
         while True:
             data = conn.recv(10)
-            print ('recibido "%s"',data)
+            print ('recibido "%s"', data)
             if data:
                 print ('enviando mensaje de vuelta al cliente')
                 conn.sendall(data)
